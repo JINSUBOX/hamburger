@@ -1,13 +1,13 @@
 package com.jins.hambuger.service.impl;
 
-import com.jins.hambuger.service.mainService;
+import com.jins.hambuger.service.MainService;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class mainServiceImpl implements mainService {
+public class MainServiceImpl implements MainService {
 
     @Override
     public Map<String, Object> getMainData() {
