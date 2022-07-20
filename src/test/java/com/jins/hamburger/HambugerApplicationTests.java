@@ -1,10 +1,10 @@
-package com.jins.hambuger;
+package com.jins.hamburger;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class HambugerApplicationTests {
+class ApplicationTests {
 
 	@Test
 	void contextLoads() {
