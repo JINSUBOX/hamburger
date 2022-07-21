@@ -1,16 +1,14 @@
 package com.jins.hamburger.controller;
 
-import com.jins.hamburger.domain.hamburger.Hamburger;
+import com.jins.hamburger.dto.hamburger.HamburgerListResponseDto;
+import com.jins.hamburger.dto.hamburger.HamburgerResponseDto;
+import com.jins.hamburger.dto.hamburger.HamburgerSaveRequestDto;
+import com.jins.hamburger.dto.hamburger.HamburgerUpdateRequestDto;
 import com.jins.hamburger.service.HamburgerService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 
 @RestController
@@ -19,15 +17,37 @@ import java.util.Optional;
 public class ApiController {
     private final HamburgerService hamburgerService;
 
-    @GetMapping("/burgers")
-    public ResponseEntity<List<Hamburger>> findAll() {
-        List<Hamburger> items = hamburgerService.findAll();
-        return ResponseEntity.ok().body(items);
+    //햄버거 등록 contrller
+    @PostMapping("/burgers")
+    public Long save(@RequestBody HamburgerSaveRequestDto requestDto) {
+        return hamburgerService.save(requestDto);
     }
 
-    @GetMapping("/burgers/{id}")
-    public ResponseEntity<Hamburger> find(@PathVariable("id") Long id) {
-        Optional<Hamburger> item = hamburgerService.find(id);
-        return ResponseEntity.of(item);
+    //전체 조회 controller
+    @GetMapping("/burgers")
+    public List<HamburgerListResponseDto> findAll() {
+        return hamburgerService.findAllDesc();
     }
+
+    //단일 조회 contoller
+    @GetMapping("/burgers/{id}")
+    public HamburgerResponseDto findById(@PathVariable Long id) {
+        return hamburgerService.findById(id);
+    }
+
+    //수정 controller
+    @PutMapping("/burgers/{id}")
+    public Long update(
+            @PathVariable Long id,
+            @RequestBody HamburgerUpdateRequestDto requestDto) {
+        return hamburgerService.update(id, requestDto);
+    }
+
+    //삭제 controller
+    @DeleteMapping("/burgers/{id}")
+    public Long delete(@PathVariable Long id) {
+        hamburgerService.delete(id);
+        return id;
+    }
+
 }

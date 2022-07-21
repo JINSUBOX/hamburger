@@ -1,14 +1,17 @@
 package com.jins.hamburger.service;
 
+import com.jins.hamburger.dto.hamburger.HamburgerListResponseDto;
+import com.jins.hamburger.dto.hamburger.HamburgerResponseDto;
+import com.jins.hamburger.dto.hamburger.HamburgerSaveRequestDto;
+import com.jins.hamburger.dto.hamburger.HamburgerUpdateRequestDto;
 import com.jins.hamburger.domain.hamburger.Hamburger;
 import com.jins.hamburger.domain.hamburger.HamburgerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -16,36 +19,33 @@ import java.util.Optional;
 public class HamburgerService {
     private final HamburgerRepository hamburgerRepository;
 
-    //모든 햄버거 조회
-    @Transactional(readOnly = true)
-    public List<Hamburger> findAll() {
-        List<Hamburger> list = new ArrayList<>();
-        Iterable<Hamburger> hamburgers = hamburgerRepository.findAll();
-        hamburgers.forEach(list::add);
-        return list;
-    }
-    //햄버거 조회
-    public Optional<Hamburger> find(Long id) {
-        return hamburgerRepository.findById(id);
-    }
     //햄버거 입력
-    public Hamburger create(Hamburger newHamburger) {
-        Hamburger copy = new Hamburger(
-                newHamburger.getName(),
-                newHamburger.getPrice()
-        );
-        return hamburgerRepository.save(copy);
+    public Long save(HamburgerSaveRequestDto requestDto) {
+        return hamburgerRepository.save(requestDto.toEntity()).getId();
     }
+
+    //햄버거 조회
+    public HamburgerResponseDto findById(Long id) {
+        Hamburger entity = hamburgerRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("없는 버거 입니다. id = " + id));
+        return new HamburgerResponseDto(entity);
+    }
+
+    //모든 햄버거 조회
+    public List<HamburgerListResponseDto> findAllDesc() {
+        return hamburgerRepository.findAllDesc().stream().map(HamburgerListResponseDto::new).collect(Collectors.toList());
+    }
+
     //햄버거 수정
-    public Optional<Hamburger> update( Long id, Hamburger newHamburger) {
-        return hamburgerRepository.findById(id)
-                .map(oldHamburger -> {
-                    Hamburger updated = oldHamburger.updateWith(newHamburger);
-                    return hamburgerRepository.save(updated);
-                });
+    @Transactional
+    public Long update(Long id, HamburgerUpdateRequestDto requestDto) {
+        Hamburger hamburger = hamburgerRepository.findById(id).orElseThrow(() -> new IllegalArgumentException(" 없는 버거 입니다. id = " + id));
+        hamburger.update(requestDto.getName(), requestDto.getPrice());
+        return id;
     }
+
     //햄버거 삭제
     public void delete(Long id) {
-        hamburgerRepository.deleteById(id);
+        Hamburger hamburger = hamburgerRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("없는 버거 입니다. id = " + id));
+        hamburgerRepository.delete(hamburger);
     }
 }
