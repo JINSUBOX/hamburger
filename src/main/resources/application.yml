@@ -16,6 +16,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  security:
+    oauth2:
+      resourceserver:
+      client:
 
 logging.level:
   org.hibernate.SQL: debug
